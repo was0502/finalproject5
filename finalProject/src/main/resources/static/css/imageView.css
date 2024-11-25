@@ -1,0 +1,218 @@
+@charset "UTF-8";
+/* 페이지 기본 스타일 */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+body {    
+	font-family: 'Pretendard-Regular';
+    background-color: #3E5254;
+    overflow: hidden;
+}
+.button-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.button-container .btn:hover {
+    background-color: #0056b3;
+}
+.header {
+	float:left;
+	color:#A4BBBC;
+    font-size: 40px;
+    font-weight: 800;
+    position:absolute;
+    top:-10px;
+    left:72px;
+}
+#dicomCanvas {
+	position:absolute;
+	top:88px;
+    left:160px;
+    border: solid 2px #A4BBBC;
+    border-radius: 4px;
+}
+.sidebar{
+	position:absolute;
+	top:88px;
+    left:76px;
+	background-color: #243235;
+	width: 76px;
+	height: 800px;
+	text-align: center;
+	border-radius: 4px;
+	padding-top:20px;
+}
+
+.controls{
+	position:absolute;
+	top:88px;
+	left:1622px;
+	width: 160px;
+	height: 800px;	
+	background-color: #243235;
+	border-radius: 4px;
+	padding:20px 20px 0px 20px;
+}
+.historyBtn{
+	background:url(../img/HistoryBtn.png) no-repeat;	
+	width: 50px;
+	background-size: cover;
+	height: 50px;
+}
+#historyBtn {
+	background-color: transparent;
+	border: none;	
+	cursor: pointer;
+}
+#historyBtn:hover {
+	background-color:  rgb(111, 148, 149);
+	border-radius: 25px;
+}
+.label{
+	color:#D8D8D8;
+	font-size: 12px;
+	font-weight: 400;
+	top:16px;
+	width: 45px;
+	position: relative;
+}
+.tool3d {
+	color:#D8D8D8;
+	font-size: 12px;
+}
+.controlsTitle {
+	color: rgb(111, 148, 149);
+	font-size: 16px;
+	font-weight: 600;
+}
+.Pspan {
+	color:#D8D8D8;
+	font-size: 12px;
+	position:relative;
+	top:-4px;
+	left:4px;
+}
+/*----------------------------------------------------------*/
+
+/* rotationDropdown 스타일 */
+/* 드롭다운 버튼 스타일 */
+#rotationDropdown {
+    display: none;  /* 기본적으로 숨김 */
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    top: 50px; /* 드롭다운 위치를 조정하세요 */
+    left: 0;   /* 필요한 위치에 맞게 조정 */
+}
+
+/* 회전 드롭다운의 버튼 스타일 */
+#rotationDropdown .rotate-btn {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    margin: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+#rotationDropdown .rotate-btn:hover {
+    background-color: #0056b3;
+}
+
+.button-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.dropdown-menu {
+    position: absolute;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    display: none; /* 기본적으로 숨김 */
+    z-index: 1000;
+}
+
+#rotationDropdown .rotate-btn {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.rotate-btn {
+    width: 100px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+input, progress {
+  accent-color: #A4BBBC;
+}
+/*------------------------------------------------------------*/
+
+
+/* 드롭다운 스타일 */
+.dropdown {
+    display: none; /* 기본적으로 숨김 */
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 15px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* 다른 요소 위에 표시 */
+    border-radius: 4px;
+    min-width: 200px;
+    max-width: 300px; /* 필요에 따라 최대 너비 지정 */
+}
+
+/* 드롭다운 위치 설정 */
+#seriesDropdown {
+    top: 60px;
+    left: 20px;
+}
+
+#dropdown {
+    top: 60px;
+    left: 150px;
+}
+
+/* 그리드 셀렉터 스타일 */
+.grid-selector-container {
+    display: grid;
+    grid-template-columns: repeat(5, 30px);
+    grid-template-rows: repeat(5, 30px);
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+/* 각 그리드 셀 스타일 */
+.grid-selector-item {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.grid-selector-item:hover {
+    background-color: #e0e0e0;
+}
+
+/* 선택된 셀 스타일 */
+.grid-selector-item.selected {
+    background-color: #555;
+    color: white;
+}
+

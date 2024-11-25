@@ -1,0 +1,439 @@
+@charset "UTF-8";
+/* 페이지 기본 스타일 */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+body {    
+	font-family: 'Pretendard-Regular';
+    background-color: #3E5254;
+    overflow: hidden;
+}
+/* 헤더 설정 */
+.header {
+	float:left;
+	color:#A4BBBC;
+    font-size: 40px;
+    font-weight: 800;
+    position:absolute;
+    top:-10px;
+    left:72px;
+}
+#dicomImage {
+	position:absolute;
+	top:80px;
+    left:152px;
+    border: solid 2px #A4BBBC;
+    border-radius: 4px;
+}
+.sidebar{
+	position:absolute;
+	top:80px;
+    left:68px;
+	background-color: #243235;
+	width: 76px;
+	height: 800px;
+	text-align: center;
+	padding-top: 20px;	
+	border-radius: 4px;    
+}
+#toolbar{
+	display: none;
+}
+.toolbar {
+	position:absolute;
+	top:80px;
+    left:152px;
+	background-color: #243235;
+	width: 1680px;
+	height: 70px;
+	margin: auto;
+	border-radius: 4px;
+	border: solid 2px rgb(94, 94, 94);
+}
+.listBtn {
+	background:url(../img/ListBtn.png) no-repeat;
+	width: 50px;
+	background-size: cover;
+	height: 50px;
+}
+#listBtn,#toolbarBtn,#historyBtn,#reportBtn, .tool-btn, .annotate-btn {
+	background-color: transparent;
+	border: none;	
+	cursor: pointer;
+}
+#listBtn:hover,#toolbarBtn:hover,#historyBtn:hover,#reportBtn:hover {
+	background-color:  rgb(111, 148, 149);
+	border-radius: 25px;
+}
+.toolbarBtn{
+	background:url(../img/ToolbarBtn.png) no-repeat;	
+	width: 50px;
+	background-size: cover;
+	height: 50px;
+}
+.historyBtn{
+	background:url(../img/HistoryBtn.png) no-repeat;	
+	width: 50px;
+	background-size: cover;
+	height: 50px;
+}
+.reportBtn{
+	background:url(../img/ReportBtn.png) no-repeat;	
+	width: 50px;
+	background-size: cover;
+	height: 50px;
+}
+.span{
+	color:#D8D8D8;
+	font-size: 12px;
+	position: relative;
+	top:-16px;
+}
+.BTN{
+	border:none;
+	cursor: pointer;
+  	margin:8px;
+  	position: relative;
+  	top:4px;
+  	justify-content: center;
+}
+#prevBtn:hover,#nextBtn:hover,#playClipBtn:hover,#resetBtn:hover,#invertBtn:hover,#toolBtn:hover,
+#downloadBtn:hover,#seriesLayoutBtn:hover,#imgLayoutBtn:hover,#annotateBtn:hover,
+#ct3d:hover,#viewSeriesBtn:hover, #angle:hover,#arrow:hover,#bidirectional:hover,#cobb:hover,#ellipticalRoi:hover
+,#freehandRoi:hover,#length:hover,#probe:hover,#rectangleRoi:hover,#text:hover,#save:hover
+,#delete:hover,#magnifier:hover,#rotate:hover,#hFlip:hover,#vFlip:hover,#lRotate:hover,#rRotate:hover {
+	background-color: rgb(85, 114, 115);
+	border-radius: 25px;
+}
+.label2 {
+	color:#D8D8D8;
+	font-size: 10px;
+	font-weight: 400;
+	width: 50px;
+	position: relative;
+	left:-13px;
+	top:12px;
+}
+#prevBtn{
+	background:url(../img/BeforeBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#nextBtn{
+	background:url(../img/NextBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#playClipBtn{
+	background:url(../img/PlayclipBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#resetBtn{
+	background:url(../img/ResetBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#invertBtn{
+	background:url(../img/InvertBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#toolBtn{
+	background:url(../img/ToolBoxBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#downloadBtn{
+	background:url(../img/DownloadBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#seriesLayoutBtn{
+	background:url(../img/SeriesLayoutBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#imgLayoutBtn{
+	background:url(../img/ImgLayoutBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#annotateBtn {
+	background:url(../img/PenBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#ct3d {
+	background:url(../img/3dBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#viewSeriesBtn {
+	background:url(../img/SeriesGroupBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+.tool-dropdown-menu {
+	position: absolute;
+	top:4px;
+	left:680px;
+	background-color:  #243235;
+	width: 320px;
+	height: 64px;
+	border-radius: 4px;
+	border: solid 2px rgb(111, 148, 149);
+}
+.tool-btn{
+	margin:4px;	position: relative;
+	top:4px; left:12px;
+}
+.label{
+	color:#D8D8D8;
+	font-size: 10px;
+	font-weight: 400;
+	width: 45px;
+	position: relative;
+	left:-10px;
+	top:8px;
+}
+#magnifier {
+	background:url(../img/GlassesBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#rotate{
+	background:url(../img/RotateBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#hFlip {
+	background:url(../img/LRInvertBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+
+#vFlip {
+	background:url(../img/UDInvertBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+
+#lRotate {
+	background:url(../img/LeftRotateBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+
+#rRotate {
+	background:url(../img/RightRotateBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+.annotate-dropdown-menu{
+	background-color: #243235;
+	border-radius: 4px;
+	border: solid 2px rgb(111, 148, 149);
+	width: 610px;
+	height: 64px;
+	position: absolute;
+	top:4px;
+	left:680px;
+}
+.annotate-btn{
+	margin:4px;	position: relative; top:6px; left:12px;
+}
+#angle {
+	background:url(../img/AngleBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#arrow {
+	background:url(../img/ArrowBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#bidirectional {
+	background:url(../img/BidirectionalBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#cobb {
+	background:url(../img/CobbBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#ellipticalRoi {
+	background:url(../img/EllipticalRoiBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#freehandRoi {
+	background:url(../img/FreehandRoiBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#length {
+	background:url(../img/LengthBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#probe {
+	background:url(../img/ProbeBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#rectangleRoi {
+	background:url(../img/RectangleRoiBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#text {
+	background:url(../img/TextBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#save {
+	background:url(../img/SaveBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+#delete {
+	background:url(../img/DeleteBtn.png) no-repeat;	
+	width: 36px;
+	background-size: cover;
+	height: 36px;
+}
+.dlabel {
+	color:#D8D8D8;
+	font-size: 10px;
+	font-weight: 400;
+	width: 45px;
+	position: relative;
+	left:-10px;
+	top:8px;
+}
+/* 드롭다운 상자 스타일링 (기본적으로 숨겨짐) */
+.dropdown {
+	width: 160px;
+	height: 160px;
+    display: none;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+#seriesDropdown {
+	position: absolute;
+	left:300px;
+	top:80px;
+}
+#dropdown {
+	position: absolute;
+	left:420px;
+	top:76px;
+}
+/* 그리드 셀렉터 스타일 (5x5 그리드) */
+.grid-selector-container {
+    display: grid;
+    grid-template-columns: repeat(5, 30px);
+    grid-template-rows: repeat(5, 30px);
+    gap: 2px;
+    margin-bottom: 10px;
+}
+
+/* 각 셀 스타일 */
+.grid-selector-item {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+}
+
+/* 선택된 셀 스타일 */
+.grid-selector-item.selected {
+    background-color: rgb(128, 128, 128);
+}
+
+/* 이미지 그리드 컨테이너 (이미지 표시 영역) */
+.dicomImage {
+    display: grid;
+    grid-gap: 10px;
+    margin-top: 20px;
+}
+
+/* 이미지 아이템 스타일 */
+.grid-item {
+    border: 2px solid #333;
+    background-color: #ddd;
+    overflow: hidden;
+}
+
+/* 이미지 크기 조정 (그리드에 맞추기) */
+.grid-item img {
+    width: 100px;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.5s ease-in-out;  /* 0.5초 동안 부드럽게 전환 */
+	opacity: 0;
+}
+
+.grid-item img.loaded {
+    opacity: 1;  /* 이미지가 로드되면 나타남 */
+}
+
+.grid-item.loading img {
+    opacity: 0;  /* 로딩 중일 때 투명하게 표시 */
+}
+
+#seriesGrid {
+    width: 100%;
+    background-color: black;
+    display: grid;
+    grid-gap: 10px;  /* 그리드 셀 간격 설정 */
+}
+.grid-item {
+    border: 2px solid #333;
+    background-color: #ddd;
+    overflow: hidden;
+    pointer-events: auto;
+}
+.grid-option {
+    width: 30px;
+    height: 30px;
+    border: 1px solid white;
+    background-color: rgb(202, 202, 202);
+    cursor: pointer;
+}
+.grid-option.selected {
+    background-color: grey;
+}

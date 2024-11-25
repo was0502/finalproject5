@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/cornerstone-core"></script>
+    <script src="https://unpkg.com/cornerstone-wado-image-loader"></script>
+    <script src="https://unpkg.com/cornerstone-tools"></script>
+    <script src="https://unpkg.com/dicom-parser"></script>
+    <script src="https://unpkg.com/cornerstone-math"></script>
+    <script src="https://unpkg.com/hammerjs"></script>
+    <script src="https://unpkg.com/vtk.js"></script>
+  	<link rel="stylesheet" th:href="@{/css/imageView.css}">
+    <title>ct3dView</title>
+    <style>
+        #dicomCanvas {
+			height: 816px;
+			width: 1470px;
+            background-color: black;
+            display: inline-block;
+        }
+        #controls {
+            display: inline-block;
+            vertical-align: top;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+	<h2  class="header">DView</h2>
+        <div class="sidebar">
+			<button id="historyBtn" class="historyBtn" onclick="window.history.back();">
+    <h6 class="label">돌아가기</h6>
+</button>
+
+		</div>
+    <div id="dicomCanvas"></div> <!-- 3D 볼륨 렌더링 영역 -->
+    <div id="controls" class="controls">
+		<h6 class="controlsTitle" style="position:relative; top:-40px;">Opacity</h6>
+		<div style="position:relative; top:-68px;">
+	        <label class="tool3d" for="skinOpacity">Skin Opacity</label>
+	        <input type="range" id="skinOpacity" min="0" max="1" step="0.01" value="0.05"><span id="skinOpacityLabel" class="Pspan">0.05</span>
+			
+			<!-- 추가된 내장 투명도 슬라이더 -->
+			<label class="tool3d" for="organOpacity">Organ Opacity</label>
+			<input type="range" id="organOpacity" min="0" max="1" step="0.01" value="0.6"><span id="organOpacityLabel" class="Pspan">0.6</span>
+	
+	        <label class="tool3d" for="muscleOpacity">Muscle Opacity</label>
+	        <input type="range" id="muscleOpacity" min="0" max="1" step="0.01" value="0.5"><span id="muscleOpacityLabel" class="Pspan">0.5</span>
+	
+	        <label class="tool3d" for="boneOpacity">Bone Opacity</label>
+	        <input type="range" id="boneOpacity" min="0" max="1" step="0.01" value="1"><span id="boneOpacityLabel" class="Pspan">0.5</span>
+	        
+	        <label class="tool3d" for="denseBoneOpacity">Dense Bone Opacity</label>
+			<input type="range" id="denseBoneOpacity" min="0" max="1" step="0.01" value="1.0"><span id="denseBoneOpacityLabel" class="Pspan">0.5</span>
+		</div>
+			
+		<h6 class="controlsTitle" style="position:relative; top:-80px;" >Light</h6>
+		<div style="position:relative; top:-108px;">
+			<label class="tool3d" for="ambientLight">Ambient Light</label>
+			<input type="range" id="ambientLight" min="0" max="1" step="0.01" value="0.2"><span id="ambientLightLabel" class="Pspan">0.2</span>
+			
+			<label class="tool3d" for="diffuseLight">Diffuse Light</label>
+			<input type="range" id="diffuseLight" min="0" max="1" step="0.01" value="0.7"><span id="diffuseLightLabel" class="Pspan">0.7</span>
+			
+			<label class="tool3d" for="specularLight">Specular Light</label>
+			<input type="range" id="specularLight" min="0" max="1" step="0.01" value="0.3"><span id="specularLightLabel" class="Pspan">0.3</span>
+		</div>
+		
+			<h6 class="controlsTitle" style="position:relative; top:-110px;">Position</h6>
+		<div style="position:relative; top:-138px;">
+	        <label class="tool3d" for="startSlice">Start Slice Position (Z-axis)</label>
+	        <input type="range" id="startSlice" min="0" step="1" value="0"><br>
+	
+	        <label class="tool3d" for="spacingX">Spacing X</label>
+	        <input type="range" id="spacingX" min="0.5" max="10" step="0.1" value="1"><br>
+	
+	        <label class="tool3d" for="spacingY">Spacing Y</label>
+	        <input type="range" id="spacingY" min="0.5" max="10" step="0.1" value="1"><br>
+	
+	        <label class="tool3d" for="spacingZ">Spacing Z</label>
+	        <input type="range" id="spacingZ" min="0.5" max="10" step="0.1" value="8"><br>
+		</div>
+	    </div>
+
+    <script>
+        cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
+
+        cornerstoneWADOImageLoader.webWorkerManager.initialize({
+            maxWebWorkers: navigator.hardwareConcurrency || 1,
+            startWebWorkersOnDemand: true,
+            webWorkerPath: 'https://unpkg.com/cornerstone-wado-image-loader/dist/cornerstoneWADOImageLoaderWebWorker.js',
+            taskConfiguration: {
+                decodeTask: {
+                    codecsPath: 'https://unpkg.com/cornerstone-wado-image-loader/dist/cornerstoneWADOImageLoaderCodecs.js'
+                }
+            }
+        });
+
+        const imagePaths = JSON.parse(sessionStorage.getItem('imagePaths'));
+
+        if (!imagePaths) {
+            console.error("Image paths not found in session storage.");
+        }
+
+        document.getElementById('startSlice').max = imagePaths.length - 1;
+
+        const renderWindowContainer = document.getElementById('dicomCanvas');
+        const renderWindow = vtk.Rendering.Core.vtkRenderWindow.newInstance();
+        const renderer = vtk.Rendering.Core.vtkRenderer.newInstance();
+        renderWindow.addRenderer(renderer);
+
+        const openglRenderWindow = vtk.Rendering.OpenGL.vtkRenderWindow.newInstance();
+        openglRenderWindow.setContainer(renderWindowContainer);
+        renderWindow.addView(openglRenderWindow);
+
+        const interactor = vtk.Rendering.Core.vtkRenderWindowInteractor.newInstance();
+        interactor.setView(openglRenderWindow);
+        interactor.initialize();
+        interactor.bindEvents(renderWindowContainer);
+
+        const interactorStyle = vtk.Interaction.Style.vtkInteractorStyleTrackballCamera.newInstance();
+        interactor.setInteractorStyle(interactorStyle);
+
+        const imageData = vtk.Common.DataModel.vtkImageData.newInstance();
+        const dimensions = [512, 512, imagePaths.length];
+        let spacing = [1.0, 1.0, 8.0]; // 초기 spacing 설정
+        imageData.setDimensions(dimensions);
+        imageData.setSpacing(spacing);
+
+        let startSliceIndex = 0;
+        let volume;
+        const scalars = new Uint16Array(dimensions[0] * dimensions[1] * dimensions[2]);
+
+        let skinOpacity = 0.05;
+        let muscleOpacity = 0.5;
+        let boneOpacity = 1.0;
+        let denseBoneOpacity = 1.0;
+
+        async function loadSlices() {
+            if (volume) {
+                renderer.removeVolume(volume);
+                renderWindow.render();
+            }
+
+            const orderedPaths = [
+                ...imagePaths.slice(startSliceIndex),
+                ...imagePaths.slice(0, startSliceIndex),
+            ];
+
+            for (let z = 0; z < orderedPaths.length; z++) {
+                const imageId = `wadouri:/dicom-file/${orderedPaths[z]}`;
+                try {
+                    const image = await cornerstone.loadAndCacheImage(imageId);
+                    const pixelData = image.getPixelData();
+
+                    for (let y = 0; y < dimensions[1]; y++) {
+                        for (let x = 0; x < dimensions[0]; x++) {
+                            const pixelValue = pixelData[y * dimensions[0] + x];
+                            scalars[z * dimensions[0] * dimensions[1] + y * dimensions[0] + x] = pixelValue;
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error loading image:", error);
+                }
+            }
+
+            const scalarArray = vtk.Common.Core.vtkDataArray.newInstance({
+                name: 'Scalars',
+                numberOfComponents: 1,
+                values: scalars,
+            });
+
+            imageData.getPointData().setScalars(scalarArray);
+            createVolumeRendering();
+        }
+
+        function createVolumeRendering() {
+		    const mapper = vtk.Rendering.Core.vtkVolumeMapper.newInstance();
+		    mapper.setInputData(imageData);
+		
+		    // 샘플링 설정
+		    mapper.setSampleDistance(0.1);
+		
+		    volume = vtk.Rendering.Core.vtkVolume.newInstance();
+		    volume.setMapper(mapper);
+		
+		    const colorTransferFunction = vtk.Rendering.Core.vtkColorTransferFunction.newInstance();
+		    colorTransferFunction.addRGBPoint(0, 0.5, 0.3, 0.3);
+		    colorTransferFunction.addRGBPoint(500, 0.5, 0.3, 0.3);
+		    colorTransferFunction.addRGBPoint(700, 0.8, 0.5, 0.4);
+		    colorTransferFunction.addRGBPoint(1200, 1.0, 1.0, 1.0);
+		    colorTransferFunction.addRGBPoint(3000, 1.0, 1.0, 1.0);
+		
+		    opacityFunction = vtk.Common.DataModel.vtkPiecewiseFunction.newInstance();
+		    updateOpacityFunction();
+		
+		    volume.getProperty().setRGBTransferFunction(0, colorTransferFunction);
+		    volume.getProperty().setScalarOpacity(0, opacityFunction);
+		
+		    // 조명 및 그림자 활성화
+		    volume.getProperty().setShade(true); // 조명 활성화
+		    volume.getProperty().setAmbient(0.2); // 주변광
+		    volume.getProperty().setDiffuse(0.7); // 확산광
+		    volume.getProperty().setSpecular(0.3); // 반사광
+		    volume.getProperty().setSpecularPower(50.0); // 반사광 강도
+		
+		    // 그림자 효과 활성화
+		    volume.getProperty().setUseGradientOpacity(0, true); // 그림자 활성화
+		    volume.getProperty().setGradientOpacityMinimumValue(0, 5); // 최소 그라디언트 값
+		    volume.getProperty().setGradientOpacityMaximumValue(0, 50); // 최대 그라디언트 값
+		
+		    // Interpolation 설정
+		    volume.getProperty().setInterpolationTypeToLinear();
+		
+		    volume.getProperty().setScalarOpacityUnitDistance(0, 0.5); // 샘플링 간격 축소
+		
+		    renderer.addVolume(volume);
+		    renderer.resetCamera();
+		    renderWindow.render();
+		}
+
+        function updateOpacityFunction() {
+		    opacityFunction.removeAllPoints();
+		
+		    // 공기: 무조건 투명
+		    opacityFunction.addPoint(-1000, 0.0); // 공기
+		    opacityFunction.addPoint(-700, 0.0); // 공기
+		
+		    // 물: 기본 투명
+		    opacityFunction.addPoint(-300, 0.0); // 지방과 물 사이
+		    opacityFunction.addPoint(0, 0.0);    // 물
+		
+		    // 피부
+		    opacityFunction.addPoint(200, skinOpacity); // 피부 시작
+		    opacityFunction.addPoint(500, skinOpacity); // 피부 끝
+		
+		    // 근육
+		    opacityFunction.addPoint(600, muscleOpacity); // 근육 시작
+		    opacityFunction.addPoint(800, muscleOpacity); // 근육 끝
+		
+		    // 장기(뇌 포함)
+		    opacityFunction.addPoint(400, organOpacity);  // 장기 시작
+		    opacityFunction.addPoint(700, organOpacity); // 장기 끝
+		
+		    // 뼈
+		    opacityFunction.addPoint(1000, boneOpacity); // 일반 뼈 시작
+		    opacityFunction.addPoint(1200, boneOpacity); // 일반 뼈 끝
+		    opacityFunction.addPoint(2000, denseBoneOpacity); // 고밀도 뼈 시작
+		    opacityFunction.addPoint(3000, denseBoneOpacity); // 고밀도 뼈 끝
+		
+		    renderWindow.render(); // 렌더링 갱신
+		}
+
+		
+        loadSlices();
+        
+        
+		// 내장 투명도 슬라이더 이벤트 리스너 추가
+		document.getElementById('organOpacity').addEventListener('input', (event) => {
+		    organOpacity = parseFloat(event.target.value);
+		    document.getElementById('organOpacityLabel').innerText = organOpacity.toFixed(2);
+		    updateOpacityFunction();
+		});
+
+        // 슬라이더 이벤트 리스너
+        document.getElementById('skinOpacity').addEventListener('input', (event) => {
+            skinOpacity = parseFloat(event.target.value);
+            document.getElementById('skinOpacityLabel').innerText = skinOpacity.toFixed(2);
+            updateOpacityFunction();
+        });
+
+        document.getElementById('muscleOpacity').addEventListener('input', (event) => {
+            muscleOpacity = parseFloat(event.target.value);
+            document.getElementById('muscleOpacityLabel').innerText = muscleOpacity.toFixed(2);
+            updateOpacityFunction();
+        });
+
+        document.getElementById('boneOpacity').addEventListener('input', (event) => {
+            boneOpacity = parseFloat(event.target.value);
+            document.getElementById('boneOpacityLabel').innerText = boneOpacity.toFixed(2);
+            updateOpacityFunction();
+        });
+        
+        document.getElementById('denseBoneOpacity').addEventListener('input', (event) => {
+		    denseBoneOpacity = parseFloat(event.target.value);
+		    document.getElementById('denseBoneOpacityLabel').innerText = denseBoneOpacity.toFixed(2);
+		    updateOpacityFunction();
+		});
+
+        document.getElementById('startSlice').addEventListener('input', (event) => {
+            startSliceIndex = parseInt(event.target.value);
+            loadSlices();
+        });
+
+        document.getElementById('spacingX').addEventListener('input', (event) => {
+            spacing[0] = parseFloat(event.target.value);
+            imageData.setSpacing(spacing);
+            renderWindow.render();
+        });
+
+        document.getElementById('spacingY').addEventListener('input', (event) => {
+            spacing[1] = parseFloat(event.target.value);
+            imageData.setSpacing(spacing);
+            renderWindow.render();
+        });
+
+        document.getElementById('spacingZ').addEventListener('input', (event) => {
+            spacing[2] = parseFloat(event.target.value);
+            imageData.setSpacing(spacing);
+            renderWindow.render();
+        });
+        
+        // 조명 슬라이더 이벤트 리스너
+		document.getElementById('ambientLight').addEventListener('input', (event) => {
+		    const value = parseFloat(event.target.value);
+		    document.getElementById('ambientLightLabel').innerText = value.toFixed(2);
+		    volume.getProperty().setAmbient(value);
+		    renderWindow.render();
+		});
+		
+		document.getElementById('diffuseLight').addEventListener('input', (event) => {
+		    const value = parseFloat(event.target.value);
+		    document.getElementById('diffuseLightLabel').innerText = value.toFixed(2);
+		    volume.getProperty().setDiffuse(value);
+		    renderWindow.render();
+		});
+		
+		document.getElementById('specularLight').addEventListener('input', (event) => {
+		    const value = parseFloat(event.target.value);
+		    document.getElementById('specularLightLabel').innerText = value.toFixed(2);
+		    volume.getProperty().setSpecular(value);
+		    renderWindow.render();
+		});
+    </script>
+</body>
+</html>
